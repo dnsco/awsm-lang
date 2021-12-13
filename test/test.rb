@@ -20,15 +20,16 @@ def clean_and_build
   puts "\n"
 end
 
-clean_and_build
+# clean_and_build
 
 describe "the program" do
-  def check(program, result)
-    stdout, _, _ = Open3.capture3("./build/exec/awsm")
-    assert { stdout == "#{result}\n" }
+  def check(program, expected)
+    stdout, _, _ = Open3.capture3("./build/exec/awsm", stdin_data: program)
+    assert { stdout.strip == expected.to_s }
   end
 
   it "supports addition" do
     check("2 + 2", 4)
+    check("2 + 2 + 4", 9)
   end
 end
