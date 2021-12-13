@@ -7,16 +7,24 @@ import { Timeout } from "https://deno.land/x/timeout/mod.ts";
 // Simple name and function, compact form, but not configurable
 await cleanAndBuild();
 
-Deno.test("hello world #1", async () => {
-  assertEquals(await runProgram("build/addition.wasm", "2 + 3"), `${5}`);
+Deno.test("Test Addition", async () => {
+  await check("addition", "2 + 3", 5);
 });
+
+async function check(filename: string, program: string, expected: number) {
+  assertEquals(await runProgram(filename, program), `${expected}`);
+}
 
 async function runProgram(filename: string, program: string) {
   const wat = await compile2Wat(program);
-  console.log("\n", wat);
-  console.log(await wat2Wasm(filename, wat));
 
-  const wasmCode = await Deno.readFile(filename);
+  const watFilename = "build/" + filename + ".wat";
+  const wasmFilename = "build/" + filename + ".wasm";
+
+  await Deno.writeTextFileSync(watFilename, wat);
+  await runShell(["wat2Wasm", watFilename, "-o", wasmFilename]);
+
+  const wasmCode = await Deno.readFile(wasmFilename);
   const wasmModule = new WebAssembly.Module(wasmCode);
   const wasmInstance = new WebAssembly.Instance(wasmModule);
   const main = wasmInstance.exports.main as CallableFunction;
@@ -34,21 +42,6 @@ async function compile2Wat(program: string) {
   p.stdin.close();
   const { success } = await Timeout.race([p.status()], 1000);
   assert(success, "Compile language unsucessful");
-
-  p.close();
-  return new TextDecoder().decode(await p.output());
-}
-
-async function wat2Wasm(filename: string, program: string) {
-  const p = Deno.run({
-    cmd: ["wat2Wasm", "-o", filename, "-"],
-    stdout: "piped",
-    stdin: "piped",
-  });
-  p.stdin.write(new TextEncoder().encode(program));
-  p.stdin.close();
-  const { success } = await Timeout.race([p.status()], 1000);
-  assert(success, "Compile wat 2 wasm unsucessful");
 
   p.close();
   return new TextDecoder().decode(await p.output());
