@@ -1,0 +1,9 @@
+
+An attempt at building a language that compiles to idris.
+
+Goals:
+- Compile to wasm
+- Sum Types
+- Minimal allocation boilerplate
+- Practical
+- Familiar
