@@ -6,8 +6,6 @@ A very limited calculator that supports
     and
     - addition
 
-Wasm codgen TODO ;-)
-
 Goals:
 - Compile to wasm
 - Fast compilation & Type Checking

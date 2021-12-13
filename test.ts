@@ -8,7 +8,8 @@ import { Timeout } from "https://deno.land/x/timeout/mod.ts";
 await cleanAndBuild();
 
 Deno.test("Test Addition", async () => {
-  await check("addition", "2 + 3", 5);
+  await check("addition1", "2 + 3", 5);
+  await check("addition2", "2 + 6", 8);
 });
 
 async function check(filename: string, program: string, expected: number) {
@@ -32,11 +33,12 @@ async function compileAwsm2Wat(program: string) {
     cmd: ["build/exec/awsm"],
     stdout: "piped",
     stdin: "piped",
+    stderr: "piped",
   });
   p.stdin.write(new TextEncoder().encode(program));
   p.stdin.close();
   const { success } = await Timeout.race([p.status()], 1000);
-  assert(success, "Compile language unsucessful");
+  assert(success, "AWSM compiler: \n" + await p.stderrOutput());
 
   p.close();
   return new TextDecoder().decode(await p.output());
@@ -66,10 +68,18 @@ async function cleanAndBuild() {
 }
 
 async function runShell(cmd: string[] | string) {
-  const p = Deno.run({ cmd: Array.from(cmd), stdout: "piped" });
+  const p = Deno.run({
+    cmd: Array.from(cmd),
+    stdout: "piped",
+    stderr: "piped",
+  });
   const { success } = await p.status();
-  assert(success, "comand not successful: " + JSON.stringify(cmd));
   const stdout = new TextDecoder().decode(await p.output());
+  const stdErr = new TextDecoder().decode(await p.stderrOutput());
+  assert(
+    success,
+    "comand not successful: " + JSON.stringify(cmd) + "\n" + stdErr,
+  );
   p.close();
   return stdout;
 }
