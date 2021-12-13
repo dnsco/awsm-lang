@@ -1,10 +1,30 @@
+An attempt to build a language that compiles to wasm in idris2
 
-An attempt at building a language that compiles to idris.
+Right Now:
+A very limited calculator that supports
+    - addition
+    and
+    - addition
+
+Wasm codgen TODO ;-)
 
 Goals:
 - Compile to wasm
+- Fast compilation & Type Checking
 - Sum Types
+- mutability XOR alias a la rust or some time of afinity in type system
 - Minimal allocation boilerplate
 - Practical
 - Familiar
-- Fast compilation & Type Checking
+
+Why Idris?
+I wanted more experience with I wanted more experience with dependent types and effect systems. 
+
+Inspo:
+https://github.com/AndrasKovacs/smalltt
+https://without.boats/blog/notes-on-a-smaller-rust/
+https://without.boats/blog/revisiting-a-smaller-rust/
+https://github.com/idris-lang/Idris2
+https://rust-analyzer.github.io/blog/2021/11/21/ides-and-macros.html
+https://rust-analyzer.github.io/blog/2020/07/20/three-architectures-for-responsive-ide.html
+
