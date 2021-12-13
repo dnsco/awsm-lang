@@ -15,24 +15,19 @@ async function check(filename: string, program: string, expected: number) {
   assertEquals(await runProgram(filename, program), `${expected}`);
 }
 
-async function runProgram(filename: string, program: string) {
-  const wat = await compile2Wat(program);
-
-  const watFilename = "build/" + filename + ".wat";
-  const wasmFilename = "build/" + filename + ".wasm";
-
-  await Deno.writeTextFileSync(watFilename, wat);
-  await runShell(["wat2Wasm", watFilename, "-o", wasmFilename]);
-
-  const wasmCode = await Deno.readFile(wasmFilename);
-  const wasmModule = new WebAssembly.Module(wasmCode);
-  const wasmInstance = new WebAssembly.Instance(wasmModule);
-  const main = wasmInstance.exports.main as CallableFunction;
-  const output = main().toString();
+async function runProgram(testFilenameBase: string, program: string) {
+  const wasmFilename = await compile(program, testFilenameBase);
+  const output = await runWasmFile(wasmFilename);
   return output;
 }
 
-async function compile2Wat(program: string) {
+async function compile(program: string, baseFilename: string) {
+  const wat = await compileAwsm2Wat(program);
+  const wasmFilename = await writeWasmToDisk(baseFilename, wat);
+  return wasmFilename;
+}
+
+async function compileAwsm2Wat(program: string) {
   const p = Deno.run({
     cmd: ["build/exec/awsm"],
     stdout: "piped",
@@ -45,6 +40,24 @@ async function compile2Wat(program: string) {
 
   p.close();
   return new TextDecoder().decode(await p.output());
+}
+
+async function writeWasmToDisk(filename: string, wat: string) {
+  const watFilename = "build/" + filename + ".wat";
+  const wasmFilename = "build/" + filename + ".wasm";
+
+  await Deno.writeTextFileSync(watFilename, wat);
+  await runShell(["wat2Wasm", watFilename, "-o", wasmFilename]);
+  return wasmFilename;
+}
+
+async function runWasmFile(wasmFilename: string) {
+  const wasmCode = await Deno.readFile(wasmFilename);
+  const wasmModule = new WebAssembly.Module(wasmCode);
+  const wasmInstance = new WebAssembly.Instance(wasmModule);
+  const main = wasmInstance.exports.main as CallableFunction;
+  const output = main().toString();
+  return output;
 }
 
 async function cleanAndBuild() {
