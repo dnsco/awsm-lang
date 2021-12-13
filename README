@@ -7,3 +7,4 @@ Goals:
 - Minimal allocation boilerplate
 - Practical
 - Familiar
+- Fast compilation & Type Checking
