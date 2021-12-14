@@ -4,3 +4,5 @@ version = 0.0.1
 sourcedir = "src"
 main = Main
 executable = awsm
+
+depends = idris2, prelude, contrib
