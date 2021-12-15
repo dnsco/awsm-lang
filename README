@@ -16,7 +16,7 @@ Goals:
 - Familiar
 
 Why Idris?
-I wanted more experience with I wanted more experience with dependent types and effect systems. 
+I wanted more experience with dependant types and effect systems for more new-language inspiration. Also, haskell-like languages are good for parsers, or something.
 
 Inspo:
 https://github.com/AndrasKovacs/smalltt
