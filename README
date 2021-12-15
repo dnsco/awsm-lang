@@ -18,6 +18,9 @@ Goals:
 Why Idris?
 I wanted more experience with dependant types and effect systems for more new-language inspiration. Also, haskell-like languages are good for parsers, or something.
 
+Why WASM Codegen?
+I wanted to liberate myself from LLMV, and also get a handle on lower-level programming, but you're probably right.
+
 Inspo:
 https://github.com/AndrasKovacs/smalltt
 https://without.boats/blog/notes-on-a-smaller-rust/
